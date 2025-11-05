@@ -56,7 +56,7 @@ AVATAR_STYLES = [
 ]
 AVATAR_OPTIONS = len(AVATAR_STYLES)
 
-# --- Asset Containers ---
+# Asset
 game_assets = {
     'fonts': {},
     'images': {},
@@ -84,13 +84,11 @@ def create_background_asset():
 def load_assets():
     """Loads all game assets into the containers."""
     print("Loading assets...")
-    # Load Fonts - Using retro-style system fonts
+    # Fonts 
     fonts = ['Press Start 2P', 'Consolas', 'Courier New', 'Monaco']
-    
-    # Try to find the most retro-looking font available on the system
     for font_name in fonts:
         if font_name.lower() in [f.lower() for f in pygame.font.get_fonts()]:
-            game_assets['fonts']['title'] = pygame.font.SysFont(font_name, 40)  # Smaller size for pixel fonts
+            game_assets['fonts']['title'] = pygame.font.SysFont(font_name, 40) 
             game_assets['fonts']['score'] = pygame.font.SysFont(font_name, 32)
             game_assets['fonts']['menu'] = pygame.font.SysFont(font_name, 24)
             game_assets['fonts']['input'] = pygame.font.SysFont(font_name, 20)
@@ -98,7 +96,7 @@ def load_assets():
             print(f"Using font: {font_name}")
             break
     else:
-        # Fallback to a basic monospace font if none of the preferred fonts are found
+        # Fallback
         print("Using fallback monospace font")
         game_assets['fonts']['title'] = pygame.font.SysFont('monospace', 40, bold=True)
         game_assets['fonts']['score'] = pygame.font.SysFont('monospace', 32, bold=True)
@@ -448,7 +446,6 @@ def draw_pause_menu():
 def draw_game_over():
     """the game."""
     
-    # NOTE: draw_game_elements() is called first, which draws the background.
     overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180)) 
     screen.blit(overlay, (0, 0))
@@ -892,3 +889,4 @@ finally:
     #Quit
     pygame.quit()
     sys.exit()
+
