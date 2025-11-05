@@ -56,7 +56,7 @@ AVATAR_STYLES = [
 ]
 AVATAR_OPTIONS = len(AVATAR_STYLES)
 
-# Asset
+# --- Asset Containers ---
 game_assets = {
     'fonts': {},
     'images': {},
@@ -84,11 +84,13 @@ def create_background_asset():
 def load_assets():
     """Loads all game assets into the containers."""
     print("Loading assets...")
-    # Fonts 
+    # Load Fonts - Using retro-style system fonts
     fonts = ['Press Start 2P', 'Consolas', 'Courier New', 'Monaco']
+    
+    # Try to find the most retro-looking font available on the system
     for font_name in fonts:
         if font_name.lower() in [f.lower() for f in pygame.font.get_fonts()]:
-            game_assets['fonts']['title'] = pygame.font.SysFont(font_name, 40) 
+            game_assets['fonts']['title'] = pygame.font.SysFont(font_name, 40)  # Smaller size for pixel fonts
             game_assets['fonts']['score'] = pygame.font.SysFont(font_name, 32)
             game_assets['fonts']['menu'] = pygame.font.SysFont(font_name, 24)
             game_assets['fonts']['input'] = pygame.font.SysFont(font_name, 20)
@@ -96,7 +98,7 @@ def load_assets():
             print(f"Using font: {font_name}")
             break
     else:
-        # Fallback
+        # Fallback to a basic monospace font if none of the preferred fonts are found
         print("Using fallback monospace font")
         game_assets['fonts']['title'] = pygame.font.SysFont('monospace', 40, bold=True)
         game_assets['fonts']['score'] = pygame.font.SysFont('monospace', 32, bold=True)
@@ -446,6 +448,7 @@ def draw_pause_menu():
 def draw_game_over():
     """the game."""
     
+    # NOTE: draw_game_elements() is called first, which draws the background.
     overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180)) 
     screen.blit(overlay, (0, 0))
@@ -775,24 +778,28 @@ try:
             elif game_state == "GET_NAMES":
                 if event.type == pygame.KEYDOWN:
                   # SPACE for click or enter
-                    if event.key == pygame.K_SPACE and current_input_text.strip() != "":
-                        # Consume the SPACE character if it was just typed
-                        if event.unicode == ' ':
-                            current_input_text = current_input_text[:-1]
-
-                        if active_input_player == 1:
-                            player1_name = current_input_text.strip()
-                            active_input_player = 2
-                            current_input_text = ""
-                            input_prompt = "Player 2, enter your name and press SPACE to confirm:"
-                        elif active_input_player == 2:
-                            player2_name = current_input_text.strip()
-                            
-            #  Avatar Select
-                            active_select_player = 1
-                            avatar_select_selection = player1_avatar_index 
-                            avatar_prompt_message = "" 
-                            game_state = "AVATAR_SELECT"
+                    if event.key == pygame.K_SPACE:
+                        # Behavior: plain SPACE confirms the name entry (if non-empty).
+                        # If the user holds CTRL+SPACE, insert a literal space into the name instead.
+                        # This keeps SPACE as the confirm key but still allows typing spaces via Ctrl+Space.
+                        if event.mod & pygame.KMOD_CTRL:
+                            # Insert a space character when Ctrl+Space is pressed
+                            if len(current_input_text) < 15:
+                                current_input_text += ' '
+                        elif current_input_text.strip() != "":
+                            # Confirm input (do not remove characters).
+                            if active_input_player == 1:
+                                player1_name = current_input_text.strip()
+                                active_input_player = 2
+                                current_input_text = ""
+                                input_prompt = "Player 2, enter your name and press SPACE to confirm:"
+                            elif active_input_player == 2:
+                                player2_name = current_input_text.strip()
+                                # Move to avatar selection
+                                active_select_player = 1
+                                avatar_select_selection = player1_avatar_index 
+                                avatar_prompt_message = "" 
+                                game_state = "AVATAR_SELECT"
                             
                     elif event.key == pygame.K_BACKSPACE:
                         current_input_text = current_input_text[:-1]
